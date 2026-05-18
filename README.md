@@ -177,4 +177,4 @@ Jumlah data:
 
 # 📌 Kesimpulan
 
-Aplikasi ini berhasil menerapkan metode Machine Learning untuk memprediksi produktivitas padi dengan visualisasi interaktif berbasis web sehingga dapat membantu analisis data pertanian secara lebih modern dan informatif.
+Aplikasi ini berhasil menerapkan metode Machine Learning untuk memprediksi produktivitas padi dengan visualisasi interaktif berbasis web sehingga dapat membantu analisis data pertanian secara lebih modern dan informatif.# uts-kecerdasan-buatan
