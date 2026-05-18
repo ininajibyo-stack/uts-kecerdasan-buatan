@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Perbandingan Model</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Chart JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        body{
+            background:#f4f7f9;
+        }
+
+        .card-custom{
+            border:none;
+            border-radius:20px;
+            transition:0.3s;
+        }
+
+        .card-custom:hover{
+            transform:translateY(-5px);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            🌾 Prediksi Padi
+
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div class="collapse navbar-collapse"
+             id="navbarNav">
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/">
+
+                        Homepage
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/predict">
+
+                        Halaman Prediksi
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link active"
+                       href="/comparison">
+
+                        Perbandingan Model
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/about">
+
+                        Tentang
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<!-- CONTENT -->
+<div class="container py-5">
+
+    <!-- CARD HASIL -->
+    <div class="card shadow p-5 mb-5 card-custom">
+
+        <h1 class="text-center text-success mb-5">
+
+            Hasil Prediksi Produktivitas Padi
+
+        </h1>
+
+        <div class="row text-center">
+
+            <!-- Tahun -->
+            <div class="col-md-4 mb-4">
+
+                <h4>Tahun</h4>
+
+                <h2 class="text-success">
+
+                    {{ tahun }}
+
+                </h2>
+
+            </div>
+
+            <!-- Prediksi -->
+            <div class="col-md-4 mb-4">
+
+                <h4>Prediksi</h4>
+
+                <h2 class="text-primary">
+
+                    {{ prediction }}
+
+                </h2>
+
+            </div>
+
+            <!-- Confidence -->
+            <div class="col-md-4 mb-4">
+
+                <h4>Confidence Range</h4>
+
+                <h2 class="text-danger">
+
+                    {{ lower }} - {{ upper }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- GRAFIK BAR -->
+    <div class="card shadow p-5 mb-5 card-custom">
+
+        <h3 class="text-center mb-4">
+
+            Grafik Perbandingan Prediksi
+
+        </h3>
+
+        <canvas id="barChart"></canvas>
+
+    </div>
+
+    <!-- GRAFIK LINE -->
+    <div class="card shadow p-5 mb-5 card-custom">
+
+        <h3 class="text-center mb-4">
+
+            Grafik Trend Produksi
+
+        </h3>
+
+        <canvas id="trendChart"></canvas>
+
+    </div>
+
+    <!-- GRAFIK LSTM -->
+    <div class="card shadow p-5 mb-5 card-custom">
+
+        <h3 class="text-center mb-4">
+
+            Grafik Training LSTM
+
+        </h3>
+
+        <canvas id="lstmChart"></canvas>
+
+    </div>
+
+    <!-- BUTTON -->
+    <div class="text-center">
+
+        <a href="/predict"
+           class="btn btn-success btn-lg">
+
+            Kembali
+
+        </a>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+    // Data dari Flask
+    const prediction =
+        Number("{{ prediction }}");
+
+    const lower =
+        Number("{{ lower }}");
+
+    const upper =
+        Number("{{ upper }}");
+
+    // ======================
+    // BAR CHART
+    // ======================
+
+    const barCtx =
+        document.getElementById('barChart');
+
+    new Chart(barCtx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: [
+                'Minimum',
+                'Prediction',
+                'Maximum'
+            ],
+
+            datasets: [{
+
+                label: 'Produksi Padi',
+
+                data: [
+                    lower,
+                    prediction,
+                    upper
+                ],
+
+                borderWidth: 1
+
+            }]
+        },
+
+        options: {
+
+            responsive: true
+
+        }
+
+    });
+
+    // ======================
+    // TREND CHART
+    // ======================
+
+    const trendCtx =
+        document.getElementById('trendChart');
+
+    new Chart(trendCtx, {
+
+        type: 'line',
+
+        data: {
+
+            labels: [
+                'Minimum',
+                'Prediction',
+                'Maximum'
+            ],
+
+            datasets: [{
+
+                label: 'Trend Produksi',
+
+                data: [
+                    lower,
+                    prediction,
+                    upper
+                ],
+
+                fill: true,
+
+                tension: 0.4
+
+            }]
+        },
+
+        options: {
+
+            responsive: true
+
+        }
+
+    });
+
+    // ======================
+    // LSTM CHART
+    // ======================
+
+    const lstmCtx =
+        document.getElementById('lstmChart');
+
+    new Chart(lstmCtx, {
+
+        type: 'line',
+
+        data: {
+
+            labels: [
+                '0',
+                '20',
+                '40',
+                '60',
+                '80',
+                '100'
+            ],
+
+            datasets: [
+
+                {
+
+                    label: 'Train Loss',
+
+                    data: [
+                        3935,
+                        3926,
+                        3917,
+                        3907,
+                        3895,
+                        3881
+                    ],
+
+                    tension: 0.4
+
+                },
+
+                {
+
+                    label: 'Validation Loss',
+
+                    data: [
+                        3930,
+                        3918,
+                        3907,
+                        3895,
+                        3880,
+                        3864
+                    ],
+
+                    tension: 0.4
+
+                }
+
+            ]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: true
+
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+```
