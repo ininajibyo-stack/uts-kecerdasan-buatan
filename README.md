@@ -158,7 +158,7 @@ https://drive.google.com/your-laporan-link
 # 🎥 Link Video YouTube
 
 ```plaintext
-https://youtube.com/your-video-link
+https://youtu.be/j39YNtTdwps 
 ```
 
 ---
